@@ -17,6 +17,7 @@
 ### Core Features
 - [x] Build landing page with header and footer
 - [x] Build dynamic header component with authentication state
+- [x] Implement conditional home page display (auth-based UI)
 - [ ] Implement recipe creation form
 - [ ] Create recipe display components
 - [ ] Add recipe browsing and search

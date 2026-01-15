@@ -4,8 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Search, Heart, Users, BookOpen, Sparkles, ChefHat } from "lucide-react"
 import { Header } from "@/components/layout/header"
+import { createClient } from "@/lib/supabase/server"
 
-export function HomePage() {
+export async function HomePage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       <Header />
@@ -25,12 +29,20 @@ export function HomePage() {
             Join our community of food lovers. Share your favorite recipes, discover new dishes, and build your personal cookbook.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
-              <Link href="/signup">Start Sharing Recipes</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6">
-              <Link href="/recipes">Browse Recipes</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
+                  <Link href="/recipes/new">Create New Recipe</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6">
+                  <Link href="/recipes">Browse Recipes</Link>
+                </Button>
+              </>
+            ) : (
+              <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
+                <Link href="/signup">Start Sharing Recipes</Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -154,26 +166,28 @@ export function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20">
-        <Card className="bg-gradient-to-r from-orange-600 to-orange-500 border-0 text-white">
-          <CardContent className="py-16 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Share Your Recipes?
-            </h2>
-            <p className="text-xl mb-8 text-orange-50 max-w-2xl mx-auto">
-              Join thousands of home cooks sharing their culinary creations with the world.
-            </p>
-            <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-6">
-              <Link href="/signup">Get Started for Free</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </section>
+      {!user && (
+        <section className="container mx-auto px-4 py-20">
+          <Card className="bg-gradient-to-r from-orange-600 to-orange-500 border-0 text-white">
+            <CardContent className="py-16 text-center">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Ready to Share Your Recipes?
+              </h2>
+              <p className="text-xl mb-8 text-orange-50 max-w-2xl mx-auto">
+                Join thousands of home cooks sharing their culinary creations with the world.
+              </p>
+              <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-6">
+                <Link href="/signup">Get Started for Free</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t bg-gray-50 mt-20">
         <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className={`grid gap-8 ${user ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <ChefHat className="h-6 w-6 text-orange-600" />
@@ -183,14 +197,16 @@ export function HomePage() {
                 Share & discover amazing recipes from food lovers worldwide.
               </p>
             </div>
-            <div>
-              <h4 className="font-bold text-gray-900 mb-4">Platform</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li><Link href="/recipes" className="hover:text-orange-600">Browse Recipes</Link></li>
-                <li><Link href="/categories" className="hover:text-orange-600">Categories</Link></li>
-                <li><Link href="/search" className="hover:text-orange-600">Search</Link></li>
-              </ul>
-            </div>
+            {user && (
+              <div>
+                <h4 className="font-bold text-gray-900 mb-4">Platform</h4>
+                <ul className="space-y-2 text-gray-600">
+                  <li><Link href="/recipes" className="hover:text-orange-600">Browse Recipes</Link></li>
+                  <li><Link href="/categories" className="hover:text-orange-600">Categories</Link></li>
+                  <li><Link href="/search" className="hover:text-orange-600">Search</Link></li>
+                </ul>
+              </div>
+            )}
             <div>
               <h4 className="font-bold text-gray-900 mb-4">Company</h4>
               <ul className="space-y-2 text-gray-600">
