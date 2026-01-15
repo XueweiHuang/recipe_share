@@ -1,65 +1,245 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { ChefHat, Search, Heart, Users, BookOpen, Sparkles } from "lucide-react"
 
-export default function Home() {
+export function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
+      {/* Header/Navigation */}
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ChefHat className="h-8 w-8 text-orange-600" />
+            <span className="text-2xl font-bold text-gray-900">RecipeShare</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="#features" className="text-gray-600 hover:text-orange-600 transition-colors">
+              Features
+            </Link>
+            <Link href="#how-it-works" className="text-gray-600 hover:text-orange-600 transition-colors">
+              How It Works
+            </Link>
+            <Link href="#community" className="text-gray-600 hover:text-orange-600 transition-colors">
+              Community
+            </Link>
+          </nav>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild className="bg-orange-600 hover:bg-orange-700">
+              <Link href="/signup">Get Started</Link>
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20 md:py-32">
+        <div className="text-center max-w-4xl mx-auto">
+          <Badge className="mb-4 bg-orange-100 text-orange-700 hover:bg-orange-200">
+            <Sparkles className="w-3 h-3 mr-1" />
+            Join 10,000+ Home Cooks
+          </Badge>
+          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            Share & Discover
+            <span className="text-orange-600"> Amazing Recipes</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            Join our community of food lovers. Share your favorite recipes, discover new dishes, and build your personal cookbook.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
+              <Link href="/signup">Start Sharing Recipes</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6">
+              <Link href="/recipes">Browse Recipes</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="container mx-auto px-4 py-20 bg-white rounded-3xl shadow-sm">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Everything You Need
+          </h2>
+          <p className="text-xl text-gray-600">
+            Powerful features to share and organize your recipes
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <BookOpen className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Easy Recipe Creation</CardTitle>
+              <CardDescription>
+                Upload your recipes with photos, ingredients, and step-by-step instructions in minutes.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Search className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Smart Search & Discovery</CardTitle>
+              <CardDescription>
+                Find recipes by ingredients, cuisine, dietary preferences, or cooking time.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Heart className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Save Your Favorites</CardTitle>
+              <CardDescription>
+                Like and save recipes to build your personal cookbook for easy access anytime.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Users className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Follow Food Creators</CardTitle>
+              <CardDescription>
+                Connect with other home cooks and get updates when they share new recipes.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <ChefHat className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Step-by-Step Guidance</CardTitle>
+              <CardDescription>
+                Clear instructions with cooking times, difficulty levels, and serving sizes.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-2 hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <Sparkles className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Beautiful Recipe Cards</CardTitle>
+              <CardDescription>
+                Showcase your dishes with stunning photo galleries and elegant layouts.
+              </CardDescription>
+            </CardHeader>
+          </Card>
         </div>
-      </main>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            How It Works
+          </h2>
+          <p className="text-xl text-gray-600">
+            Get started in three simple steps
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="text-center">
+            <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+              <span className="text-2xl font-bold text-orange-600">1</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Create Account</h3>
+            <p className="text-gray-600">
+              Sign up for free in seconds. No credit card required.
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+              <span className="text-2xl font-bold text-orange-600">2</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Share Recipes</h3>
+            <p className="text-gray-600">
+              Upload your favorite recipes with photos and detailed instructions.
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+              <span className="text-2xl font-bold text-orange-600">3</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Discover & Connect</h3>
+            <p className="text-gray-600">
+              Browse recipes from other cooks and build your collection.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="container mx-auto px-4 py-20">
+        <Card className="bg-gradient-to-r from-orange-600 to-orange-500 border-0 text-white">
+          <CardContent className="py-16 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Ready to Share Your Recipes?
+            </h2>
+            <p className="text-xl mb-8 text-orange-50 max-w-2xl mx-auto">
+              Join thousands of home cooks sharing their culinary creations with the world.
+            </p>
+            <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-6">
+              <Link href="/signup">Get Started for Free</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t bg-gray-50 mt-20">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <ChefHat className="h-6 w-6 text-orange-600" />
+                <span className="text-xl font-bold text-gray-900">RecipeShare</span>
+              </div>
+              <p className="text-gray-600">
+                Share & discover amazing recipes from food lovers worldwide.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Platform</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li><Link href="/recipes" className="hover:text-orange-600">Browse Recipes</Link></li>
+                <li><Link href="/categories" className="hover:text-orange-600">Categories</Link></li>
+                <li><Link href="/search" className="hover:text-orange-600">Search</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li><Link href="/about" className="hover:text-orange-600">About Us</Link></li>
+                <li><Link href="/contact" className="hover:text-orange-600">Contact</Link></li>
+                <li><Link href="/blog" className="hover:text-orange-600">Blog</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4">Legal</h4>
+              <ul className="space-y-2 text-gray-600">
+                <li><Link href="/privacy" className="hover:text-orange-600">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-orange-600">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t mt-8 pt-8 text-center text-gray-600">
+            <p>&copy; 2026 RecipeShare. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }
+
+export default HomePage
