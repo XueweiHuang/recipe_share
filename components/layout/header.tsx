@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ChefHat, LogOut, User as UserIcon, Settings, PlusCircle } from "lucide-react"
+import { ChefHat, LogOut, User as UserIcon, Settings, PlusCircle, Menu } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { MobileSidebar } from "./mobile-sidebar"
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
@@ -69,10 +70,26 @@ export function Header() {
   return (
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <ChefHat className="h-8 w-8 text-orange-600" />
-          <span className="text-2xl font-bold text-gray-900">RecipeShare</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <MobileSidebar
+              user={user}
+              profile={profile}
+              onLogout={handleLogout}
+              trigger={
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              }
+            />
+          </div>
+
+          <Link href="/" className="flex items-center gap-2">
+            <ChefHat className="h-8 w-8 text-orange-600" />
+            <span className="text-2xl font-bold text-gray-900">RecipeShare</span>
+          </Link>
+        </div>
         
         <nav className="hidden md:flex items-center gap-6">
           <Link href="/#features" className="text-gray-600 hover:text-orange-600 transition-colors">
@@ -93,7 +110,7 @@ export function Header() {
             <div className="h-9 w-32 animate-pulse bg-gray-200 rounded-md" />
           ) : user ? (
             <>
-              <Button asChild className="bg-orange-600 hover:bg-orange-700 hidden sm:flex">
+              <Button asChild className="bg-orange-600 hover:bg-orange-700 hidden md:flex">
                 <Link href="/recipes/new">
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Create Recipe
@@ -102,7 +119,7 @@ export function Header() {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full hidden md:inline-flex">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || 'User'} />
                       <AvatarFallback className="bg-orange-100 text-orange-600">
@@ -125,12 +142,6 @@ export function Header() {
                       My Profile
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer sm:hidden">
-                    <Link href="/recipes/new">
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Create Recipe
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/profile/settings">
                       <Settings className="h-4 w-4 mr-2" />
@@ -147,10 +158,10 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="hidden md:inline-flex">
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild className="bg-orange-600 hover:bg-orange-700">
+              <Button asChild className="bg-orange-600 hover:bg-orange-700 hidden md:inline-flex">
                 <Link href="/signup">Get Started</Link>
               </Button>
             </>

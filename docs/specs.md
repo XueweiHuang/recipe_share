@@ -1215,15 +1215,15 @@ npx shadcn-ui@latest init
 - Add session management
 
 **Step 4: Basic Layout & Navigation**
-- Header with navigation
-- Footer
-- Responsive sidebar
-- User menu dropdown
+- [x] Header with navigation
+- [x] Footer
+- [x] Responsive sidebar
+- [x] User menu dropdown
 
 **Future Enhancement - Phase 1:**
-- Back button navigation on profile/settings pages
-- Breadcrumb navigation (e.g., Home > Profile > Settings)
-- History-based navigation helpers
+- [ ] Back button navigation on profile/settings pages
+- [ ] Breadcrumb navigation (e.g., Home > Profile > Settings)
+- [ ] History-based navigation helpers
 
 ### Phase 2: Core Recipe Features (Week 3-4)
 
