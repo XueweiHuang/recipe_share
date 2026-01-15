@@ -20,8 +20,8 @@
 - [x] Implement conditional home page display (auth-based UI)
 - [x] Implement recipe creation form
 - [x] Create recipe display components
+- [x] Build user profile pages (settings & public view)
 - [ ] Add recipe browsing and search
-- [ ] Build user profile pages
 - [ ] Implement social features (like, save, comment, follow)
 
 ### Deployment
@@ -1219,6 +1219,11 @@ npx shadcn-ui@latest init
 - Footer
 - Responsive sidebar
 - User menu dropdown
+
+**Future Enhancement - Phase 1:**
+- Back button navigation on profile/settings pages
+- Breadcrumb navigation (e.g., Home > Profile > Settings)
+- History-based navigation helpers
 
 ### Phase 2: Core Recipe Features (Week 3-4)
 
