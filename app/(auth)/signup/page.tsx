@@ -124,14 +124,14 @@ export function SignupPage() {
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link href="/login" className="text-orange-600 hover:underline font-medium">
-                Sign in
-              </Link>
-            </p>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  )
+              Sign in
+            </Link>
+          </p>
+        </form>
+      </CardContent>
+    </Card>
+  </div>
+)
 }
 
 export default SignupPage

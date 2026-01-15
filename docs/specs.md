@@ -8,15 +8,15 @@
 - [x] Initialize shadcn/ui components (button, card, input, badge, separator)
 
 ### Database & Authentication  
-- [ ] Create database schema in Supabase SQL Editor
-- [ ] Set up Row Level Security policies
-- [ ] Configure Supabase Storage buckets
-- [ ] Implement authentication flows (login, signup, logout)
-- [ ] Create authentication middleware
+- [x] Create database schema in Supabase SQL Editor
+- [x] Set up Row Level Security policies
+- [x] Configure Supabase Storage buckets
+- [x] Implement authentication flows (login, signup, logout)
+- [x] Create authentication middleware
 
 ### Core Features
 - [x] Build landing page with header and footer
-- [ ] Build application layout component with navigation
+- [x] Build dynamic header component with authentication state
 - [ ] Implement recipe creation form
 - [ ] Create recipe display components
 - [ ] Add recipe browsing and search
@@ -1377,11 +1377,11 @@ npx shadcn-ui@latest init
 ## Getting Started Checklist
 
 - [x] Create Next.js project
-- [ ] Set up Supabase project
-- [ ] Configure environment variables
-- [ ] Create database schema
-- [ ] Set up authentication
-- [x] Build landing page (basic layout in progress)
+- [x] Set up Supabase project
+- [x] Configure environment variables
+- [x] Create database schema
+- [x] Set up authentication
+- [x] Build landing page with dynamic header
 - [ ] Implement recipe CRUD
 - [ ] Add user profiles
 - [ ] Deploy to Vercel

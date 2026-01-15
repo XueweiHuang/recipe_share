@@ -2,39 +2,13 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ChefHat, Search, Heart, Users, BookOpen, Sparkles } from "lucide-react"
+import { Search, Heart, Users, BookOpen, Sparkles, ChefHat } from "lucide-react"
+import { Header } from "@/components/layout/header"
 
 export function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      {/* Header/Navigation */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ChefHat className="h-8 w-8 text-orange-600" />
-            <span className="text-2xl font-bold text-gray-900">RecipeShare</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" className="text-gray-600 hover:text-orange-600 transition-colors">
-              Features
-            </Link>
-            <Link href="#how-it-works" className="text-gray-600 hover:text-orange-600 transition-colors">
-              How It Works
-            </Link>
-            <Link href="#community" className="text-gray-600 hover:text-orange-600 transition-colors">
-              Community
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild className="bg-orange-600 hover:bg-orange-700">
-              <Link href="/signup">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 md:py-32">
