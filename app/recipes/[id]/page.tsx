@@ -9,6 +9,7 @@ import Link from 'next/link'
 import DeleteRecipeButton from '@/components/recipes/delete-recipe-button'
 import LikeButton from '@/components/recipes/like-button'
 import SaveButton from '@/components/recipes/save-button'
+import { CommentSection } from '@/components/recipes/comment-section'
 
 export async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -68,6 +69,23 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
       .single()
     isSaved = !!userSaved
   }
+
+  // Fetch comments
+  const { data: comments } = await supabase
+    .from('comments')
+    .select(`
+      id,
+      content,
+      created_at,
+      updated_at,
+      user_id,
+      profiles:user_id (
+        username,
+        avatar_url
+      )
+    `)
+    .eq('recipe_id', id)
+    .order('created_at', { ascending: false })
 
   // Sort ingredients and instructions
   const sortedIngredients = recipe.ingredients.sort((a: any, b: any) => a.order - b.order)
@@ -176,7 +194,7 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
         </Card>
 
         {/* Instructions */}
-        <Card>
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle>Instructions</CardTitle>
           </CardHeader>
@@ -191,6 +209,18 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
                 </li>
               ))}
             </ol>
+          </CardContent>
+        </Card>
+
+        {/* Comments Section */}
+        <Card>
+          <CardContent className="pt-6">
+            <CommentSection
+              recipeId={id}
+              initialComments={comments || []}
+              currentUserId={user?.id || null}
+              isLoggedIn={!!user}
+            />
           </CardContent>
         </Card>
       </div>
