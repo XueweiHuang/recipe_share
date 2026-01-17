@@ -116,7 +116,7 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
           query = query.order('created_at', { ascending: true })
           break
         case 'quickest':
-          query = query.order('cook_time', { ascending: true, nullsLast: true })
+          query = query.order('cook_time', { ascending: true, nullsFirst: false })
           break
         case 'newest':
         default:
