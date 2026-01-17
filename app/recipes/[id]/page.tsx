@@ -2,12 +2,18 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Users, ChefHat } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Clock, Users, ChefHat, Edit, Trash2 } from 'lucide-react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
+import Link from 'next/link'
+import DeleteRecipeButton from '@/components/recipes/delete-recipe-button'
 
 export async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = await createClient()
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
 
   // Fetch recipe with related data
   const { data: recipe, error } = await supabase
@@ -24,6 +30,9 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
   if (error || !recipe) {
     notFound()
   }
+
+  // Check if current user is the recipe owner
+  const isOwner = user?.id === recipe.user_id
 
   // Sort ingredients and instructions
   const sortedIngredients = recipe.ingredients.sort((a: any, b: any) => a.order - b.order)
@@ -43,8 +52,21 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
         
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-            <span>By {recipe.profiles?.full_name || recipe.profiles?.username}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>By {recipe.profiles?.full_name || recipe.profiles?.username}</span>
+            </div>
+            {isOwner && (
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/recipes/${id}/edit`}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Link>
+                </Button>
+                <DeleteRecipeButton recipeId={id} recipeTitle={recipe.title} />
+              </div>
+            )}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{recipe.title}</h1>
           {recipe.description && (
