@@ -1257,6 +1257,9 @@ npx shadcn-ui@latest init
 - [x] Featured recipes section on homepage (6 recipes for logged-in users)
 - [x] Empty state component
 - [x] Recipe card with image, metadata, and author info
+- [x] Edit recipe page with pre-filled form
+- [x] Delete recipe with confirmation dialog
+- [x] Recipe ownership validation
 - [ ] Search functionality (full-text search)
 - [ ] Filter sidebar component (difficulty, cook time, servings)
 - [ ] Category pages
