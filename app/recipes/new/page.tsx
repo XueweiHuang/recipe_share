@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 import { Plus, X, ChefHat } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Ingredient, Instruction } from '@/lib/validations/recipe-schema'
@@ -18,6 +20,8 @@ export function NewRecipePage() {
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [categories, setCategories] = useState<any[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   // Form state
   const [title, setTitle] = useState('')
@@ -35,6 +39,37 @@ export function NewRecipePage() {
   const [instructions, setInstructions] = useState<Instruction[]>([
     { description: '' }
   ])
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  async function loadCategories() {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+    
+    if (error) {
+      console.error('Error loading categories:', error)
+      setError('Failed to load categories')
+    }
+    
+    if (data) {
+      console.log('Loaded categories:', data)
+      setCategories(data)
+    } else {
+      console.log('No categories found in database')
+    }
+  }
+
+  function toggleCategory(categoryId: string) {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    )
+  }
 
   const addIngredient = () => {
     setIngredients([...ingredients, { name: '', quantity: '', unit: '' }])
@@ -134,6 +169,20 @@ export function NewRecipePage() {
           .insert(validInstructions)
 
         if (instructionsError) throw instructionsError
+      }
+
+      // Insert recipe categories
+      if (selectedCategories.length > 0) {
+        const categoryLinks = selectedCategories.map(categoryId => ({
+          recipe_id: recipe.id,
+          category_id: categoryId,
+        }))
+
+        const { error: categoriesError } = await supabase
+          .from('recipe_categories')
+          .insert(categoryLinks)
+
+        if (categoriesError) throw categoriesError
       }
 
       // Success - redirect to recipe page
@@ -255,6 +304,40 @@ export function NewRecipePage() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Categories */}
+              <div className="space-y-3">
+                <Label>Categories (Optional)</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {categories.map((category) => (
+                    <div key={category.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category.id}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={() => toggleCategory(category.id)}
+                      />
+                      <label
+                        htmlFor={category.id}
+                        className="text-sm cursor-pointer select-none"
+                      >
+                        {category.name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {selectedCategories.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {categories
+                      .filter(cat => selectedCategories.includes(cat.id))
+                      .map(cat => (
+                        <Badge key={cat.id} variant="secondary">
+                          {cat.name}
+                        </Badge>
+                      ))
+                    }
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
