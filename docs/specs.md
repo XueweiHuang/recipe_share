@@ -21,7 +21,12 @@
 - [x] Implement recipe creation form
 - [x] Create recipe display components
 - [x] Build user profile pages (settings & public view)
-- [ ] Add recipe browsing and search
+- [x] Implement responsive mobile sidebar
+- [x] Add featured recipes section to homepage (shows 6 latest for logged-in users)
+- [x] Create recipe browsing page (/recipes) with grid layout
+- [x] Implement Load More pagination for recipe browsing
+- [ ] Add recipe search functionality
+- [ ] Add recipe filtering (difficulty, cook time, categories)
 - [ ] Implement social features (like, save, comment, follow)
 
 ### Deployment
@@ -1219,35 +1224,43 @@ npx shadcn-ui@latest init
 - [x] Footer
 - [x] Responsive sidebar
 - [x] User menu dropdown
+- [x] Global header in root layout (consistent across all pages)
+- [x] Breadcrumb navigation component
+- [x] Breadcrumbs on all sub-pages (recipes, recipe detail, profiles, settings, create recipe)
 
-**Future Enhancement - Phase 1:**
-- [ ] Back button navigation on profile/settings pages
-- [ ] Breadcrumb navigation (e.g., Home > Profile > Settings)
-- [ ] History-based navigation helpers
+**Future Enhancement - Phase 1:** ✅ Completed
+- [x] Back button navigation via breadcrumbs
+- [x] Breadcrumb navigation (e.g., Home > Browse Recipes > Recipe Title)
+- [ ] History-based navigation helpers (optional, browser back button works)
 
 ### Phase 2: Core Recipe Features (Week 3-4)
 
-**Step 5: Recipe Creation**
-- Build recipe upload form with validation
-- Implement image upload to Supabase Storage
-- Create ingredient list builder (add/remove inputs)
-- Create instruction step builder
-- Add category/tag selection
-- Save recipe to database
+**Step 5: Recipe Creation** ✅
+- [x] Build recipe upload form with validation
+- [x] Implement image upload to Supabase Storage
+- [x] Create ingredient list builder (add/remove inputs)
+- [x] Create instruction step builder
+- [x] Add category/tag selection
+- [x] Save recipe to database
 
-**Step 6: Recipe Display**
-- Create recipe card component for lists
-- Build recipe detail page
-- Implement image gallery/carousel
-- Display ingredients and instructions
-- Show recipe metadata (time, servings, difficulty)
+**Step 6: Recipe Display** ✅
+- [x] Create recipe card component for lists
+- [x] Build recipe detail page
+- [x] Display ingredients and instructions
+- [x] Show recipe metadata (time, servings, difficulty)
+- [x] Show recipe author information
 
-**Step 7: Recipe Browsing**
-- Homepage feed with pagination
-- Search functionality (full-text search)
-- Filter sidebar component
-- Category pages
-- Sort options implementation
+**Step 7: Recipe Browsing** ✅ (Partial - In Progress)
+- [x] Create dedicated /recipes page
+- [x] Recipe grid layout (responsive: 1/2/3 columns)
+- [x] Load More button pagination
+- [x] Featured recipes section on homepage (6 recipes for logged-in users)
+- [x] Empty state component
+- [x] Recipe card with image, metadata, and author info
+- [ ] Search functionality (full-text search)
+- [ ] Filter sidebar component (difficulty, cook time, servings)
+- [ ] Category pages
+- [ ] Sort options implementation (newest, popular, trending)
 
 ### Phase 3: User Features (Week 5)
 
@@ -1264,6 +1277,8 @@ npx shadcn-ui@latest init
 - Comment system
 - Follow/unfollow users
 - Activity feed
+
+**Note:** Once social features are implemented, like and save counts will be added to recipe cards for better user engagement.
 
 ### Phase 4: Enhancement & Polish (Week 6)
 

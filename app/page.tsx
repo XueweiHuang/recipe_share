@@ -2,18 +2,56 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Search, Heart, Users, BookOpen, Sparkles, ChefHat } from "lucide-react"
-import { Header } from "@/components/layout/header"
+import { Search, Heart, Users, BookOpen, Sparkles, ChefHat, ArrowRight } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
+import RecipeCard from "@/components/recipes/recipe-card"
 
 export async function HomePage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Fetch featured recipes if user is logged in
+  let featuredRecipes = null
+  if (user) {
+    const { data } = await supabase
+      .from('recipes')
+      .select(`
+        id,
+        title,
+        description,
+        cook_time,
+        servings,
+        difficulty,
+        profiles:user_id (
+          username,
+          avatar_url
+        ),
+        recipe_images!left (
+          image_url,
+          is_primary
+        )
+      `)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(6)
+
+    featuredRecipes = data?.map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      description: recipe.description,
+      cookTime: recipe.cook_time,
+      servings: recipe.servings,
+      difficulty: recipe.difficulty,
+      primaryImage: recipe.recipe_images?.find((img: any) => img.is_primary)?.image_url || null,
+      author: {
+        username: recipe.profiles?.username || 'Unknown',
+        avatarUrl: recipe.profiles?.avatar_url || null,
+      },
+    })) || []
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      <Header />
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 md:py-32">
         <div className="text-center max-w-4xl mx-auto">
@@ -120,6 +158,43 @@ export async function HomePage() {
           </Card>
         </div>
       </section>
+
+      {/* Featured Recipes Section */}
+      {user && featuredRecipes && featuredRecipes.length > 0 && (
+        <section className="container mx-auto px-4 py-20">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                Featured Recipes
+              </h2>
+              <p className="text-xl text-gray-600">
+                Discover the latest culinary creations from our community
+              </p>
+            </div>
+            <Button variant="outline" asChild className="hidden md:flex">
+              <Link href="/recipes">
+                Browse All
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            {featuredRecipes.map((recipe: any) => (
+              <RecipeCard key={recipe.id} {...recipe} />
+            ))}
+          </div>
+
+          <div className="text-center md:hidden">
+            <Button variant="outline" asChild className="w-full sm:w-auto">
+              <Link href="/recipes">
+                Browse All Recipes
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+      )}
 
       {/* How It Works Section */}
       <section id="how-it-works" className="container mx-auto px-4 py-20">

@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plus, X, ChefHat } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Ingredient, Instruction } from '@/lib/validations/recipe-schema'
+import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export function NewRecipePage() {
   const router = useRouter()
@@ -145,7 +146,9 @@ export function NewRecipePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <Breadcrumbs items={[{ label: 'Create Recipe' }]} />
+        
         <div className="flex items-center gap-3 mb-8">
           <ChefHat className="h-8 w-8 text-orange-600" />
           <h1 className="text-4xl font-bold text-gray-900">Create New Recipe</h1>

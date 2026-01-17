@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { User, Upload, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export function ProfileSettingsPage() {
   const router = useRouter()
@@ -149,7 +150,8 @@ export function ProfileSettingsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <Breadcrumbs items={[{ label: 'Profile Settings' }]} />
         <div className="flex items-center gap-3 mb-8">
           <User className="h-8 w-8 text-orange-600" />
           <h1 className="text-4xl font-bold text-gray-900">Profile Settings</h1>

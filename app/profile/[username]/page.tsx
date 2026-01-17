@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar, ChefHat, Clock, Users } from 'lucide-react'
 import Link from 'next/link'
+import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
@@ -43,7 +44,9 @@ export async function ProfilePage({ params }: { params: Promise<{ username: stri
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
+        <Breadcrumbs items={[{ label: `@${username}` }]} />
+        
         {/* Profile Header */}
         <Card className="mb-8">
           <CardContent className="pt-6">

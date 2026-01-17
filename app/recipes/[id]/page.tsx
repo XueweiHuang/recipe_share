@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Clock, Users, ChefHat } from 'lucide-react'
+import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -32,7 +33,14 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <Breadcrumbs 
+          items={[
+            { label: 'Browse Recipes', href: '/recipes' },
+            { label: recipe.title }
+          ]} 
+        />
+        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
