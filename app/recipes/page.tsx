@@ -1,7 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import RecipeCard from '@/components/recipes/recipe-card'
-import EmptyState from '@/components/recipes/empty-state'
-import LoadMoreButton from '@/components/recipes/load-more-button'
+import RecipeSearch from '@/components/recipes/recipe-search'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export default async function RecipesPage() {
@@ -45,8 +43,6 @@ export default async function RecipesPage() {
     },
   })) || []
 
-  const hasRecipes = recipes.length > 0
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-6">
@@ -61,20 +57,7 @@ export default async function RecipesPage() {
           </p>
         </div>
 
-        {hasRecipes ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recipes.map((recipe) => (
-                <RecipeCard key={recipe.id} {...recipe} />
-              ))}
-            </div>
-
-            {/* Load More Component */}
-            <LoadMoreButton initialRecipes={recipes} />
-          </>
-        ) : (
-          <EmptyState isLoggedIn={!!user} />
-        )}
+        <RecipeSearch initialRecipes={recipes} isLoggedIn={!!user} />
       </div>
     </div>
   )
