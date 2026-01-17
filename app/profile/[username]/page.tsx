@@ -4,13 +4,16 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Calendar, ChefHat, Clock, Users } from 'lucide-react'
+import { Calendar, ChefHat, Clock, Users, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 export async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
   const supabase = await createClient()
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
 
   // Fetch profile
   const { data: profile, error: profileError } = await supabase
@@ -22,6 +25,9 @@ export async function ProfilePage({ params }: { params: Promise<{ username: stri
   if (profileError || !profile) {
     notFound()
   }
+
+  // Check if this is the user's own profile
+  const isOwnProfile = user?.id === profile.id
 
   // Fetch user's published recipes
   const { data: recipes, error: recipesError } = await supabase
@@ -59,12 +65,23 @@ export async function ProfilePage({ params }: { params: Promise<{ username: stri
               </Avatar>
 
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    {profile.full_name || profile.username}
-                  </h1>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+                  <div>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                      {profile.full_name || profile.username}
+                    </h1>
+                    <p className="text-gray-600 mt-1">@{profile.username}</p>
+                  </div>
+                  
+                  {isOwnProfile && (
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                      <Link href="/profile/settings">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Edit Profile
+                      </Link>
+                    </Button>
+                  )}
                 </div>
-                <p className="text-gray-600 mb-4">@{profile.username}</p>
 
                 {profile.bio && (
                   <p className="text-gray-700 mb-4">{profile.bio}</p>

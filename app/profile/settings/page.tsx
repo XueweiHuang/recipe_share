@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { User, Upload, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
+import Link from 'next/link'
 
 export function ProfileSettingsPage() {
   const router = useRouter()
@@ -151,10 +152,21 @@ export function ProfileSettingsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       <div className="container mx-auto px-4 py-6 max-w-2xl">
-        <Breadcrumbs items={[{ label: 'Profile Settings' }]} />
-        <div className="flex items-center gap-3 mb-8">
-          <User className="h-8 w-8 text-orange-600" />
-          <h1 className="text-4xl font-bold text-gray-900">Profile Settings</h1>
+        <Breadcrumbs 
+          items={[
+            { label: `@${username}`, href: `/profile/${username}` },
+            { label: 'Settings' }
+          ]} 
+        />
+        
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <User className="h-8 w-8 text-orange-600" />
+            <h1 className="text-4xl font-bold text-gray-900">Profile Settings</h1>
+          </div>
+          <Button variant="outline" asChild>
+            <Link href={`/profile/${username}`}>View Public Profile</Link>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
