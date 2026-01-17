@@ -29,6 +29,13 @@ export async function HomePage() {
         recipe_images!left (
           image_url,
           is_primary
+        ),
+        recipe_categories (
+          categories (
+            id,
+            name,
+            slug
+          )
         )
       `)
       .eq('status', 'published')
@@ -47,6 +54,7 @@ export async function HomePage() {
         username: recipe.profiles?.username || 'Unknown',
         avatarUrl: recipe.profiles?.avatar_url || null,
       },
+      categories: recipe.recipe_categories?.map((rc: any) => rc.categories).filter(Boolean) || [],
     })) || []
   }
 

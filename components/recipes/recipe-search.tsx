@@ -27,8 +27,22 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [difficulty, setDifficulty] = useState(searchParams.get('difficulty') || 'all')
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest')
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const [categories, setCategories] = useState<any[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [totalCount, setTotalCount] = useState(initialRecipes.length)
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
+
+  async function loadCategories() {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+    if (data) setCategories(data)
+  }
 
   useEffect(() => {
     // Update URL with search params
@@ -36,10 +50,11 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
     if (searchQuery) params.set('q', searchQuery)
     if (difficulty !== 'all') params.set('difficulty', difficulty)
     if (sortBy !== 'newest') params.set('sort', sortBy)
+    if (selectedCategory !== 'all') params.set('category', selectedCategory)
     
     const newUrl = params.toString() ? `/recipes?${params.toString()}` : '/recipes'
     router.push(newUrl, { scroll: false })
-  }, [searchQuery, difficulty, sortBy])
+  }, [searchQuery, difficulty, sortBy, selectedCategory])
 
   async function handleSearch() {
     setLoading(true)
@@ -61,6 +76,13 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
           recipe_images!left (
             image_url,
             is_primary
+          ),
+          recipe_categories (
+            categories (
+              id,
+              name,
+              slug
+            )
           )
         `, { count: 'exact' })
         .eq('status', 'published')
@@ -105,10 +127,19 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
           username: recipe.profiles?.username || 'Unknown',
           avatarUrl: recipe.profiles?.avatar_url || null,
         },
+        categories: recipe.recipe_categories?.map((rc: any) => rc.categories).filter(Boolean) || [],
       })) || []
 
-      setRecipes(mappedRecipes)
-      setTotalCount(count || 0)
+      // Filter by category (client-side)
+      let filteredRecipes = mappedRecipes
+      if (selectedCategory !== 'all') {
+        filteredRecipes = mappedRecipes.filter(recipe => 
+          recipe.categories.some((cat: any) => cat.id === selectedCategory)
+        )
+      }
+
+      setRecipes(filteredRecipes)
+      setTotalCount(filteredRecipes.length)
     } catch (error) {
       console.error('Search error:', error)
     } finally {
@@ -118,18 +149,19 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
 
   useEffect(() => {
     handleSearch()
-  }, [difficulty, sortBy])
+  }, [difficulty, sortBy, selectedCategory])
 
   function clearFilters() {
     setSearchQuery('')
     setDifficulty('all')
     setSortBy('newest')
+    setSelectedCategory('all')
     setRecipes(initialRecipes)
     setTotalCount(initialRecipes.length)
     router.push('/recipes')
   }
 
-  const hasActiveFilters = searchQuery || difficulty !== 'all' || sortBy !== 'newest'
+  const hasActiveFilters = searchQuery || difficulty !== 'all' || sortBy !== 'newest' || selectedCategory !== 'all'
 
   return (
     <>
@@ -164,7 +196,24 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
 
             {/* Filters (collapsible) */}
             {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Category</label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map(category => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Difficulty</label>
                   <Select value={difficulty} onValueChange={setDifficulty}>
@@ -206,6 +255,15 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
                     <X 
                       className="h-3 w-3 cursor-pointer" 
                       onClick={() => setSearchQuery('')}
+                    />
+                  </Badge>
+                )}
+                {selectedCategory !== 'all' && (
+                  <Badge variant="secondary" className="gap-1">
+                    {categories.find(c => c.id === selectedCategory)?.name}
+                    <X 
+                      className="h-3 w-3 cursor-pointer" 
+                      onClick={() => setSelectedCategory('all')}
                     />
                   </Badge>
                 )}

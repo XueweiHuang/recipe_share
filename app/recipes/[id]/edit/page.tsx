@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
 import { Plus, X, ChefHat, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Ingredient, Instruction } from '@/lib/validations/recipe-schema'
@@ -20,6 +22,8 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [recipeId, setRecipeId] = useState<string | null>(null)
+  const [categories, setCategories] = useState<any[]>([])
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
   // Form state
   const [recipeTitle, setRecipeTitle] = useState('')
@@ -43,10 +47,27 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
     async function init() {
       const resolvedParams = await params
       setRecipeId(resolvedParams.id)
+      loadCategories()
       loadRecipe(resolvedParams.id)
     }
     init()
   }, [])
+
+  async function loadCategories() {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+    if (data) setCategories(data)
+  }
+
+  function toggleCategory(categoryId: string) {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    )
+  }
 
   async function loadRecipe(id: string) {
     try {
@@ -62,7 +83,8 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
         .select(`
           *,
           ingredients (id, name, quantity, unit, order),
-          instructions (id, step_number, description)
+          instructions (id, step_number, description),
+          recipe_categories (category_id)
         `)
         .eq('id', id)
         .single()
@@ -84,6 +106,12 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
       setServings(recipe.servings?.toString() || '')
       setDifficulty(recipe.difficulty || 'easy')
       setStatus(recipe.status || 'published')
+
+      // Set existing categories
+      if (recipe.recipe_categories) {
+        const categoryIds = recipe.recipe_categories.map((rc: any) => rc.category_id)
+        setSelectedCategories(categoryIds)
+      }
 
       // Set ingredients
       if (recipe.ingredients && recipe.ingredients.length > 0) {
@@ -216,6 +244,23 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
           .insert(validInstructions)
 
         if (instructionsError) throw instructionsError
+      }
+
+      // Update categories
+      // Delete existing category associations
+      await supabase.from('recipe_categories').delete().eq('recipe_id', recipeId)
+
+      // Insert new category associations
+      if (selectedCategories.length > 0) {
+        const recipeCategoriesToInsert = selectedCategories.map(categoryId => ({
+          recipe_id: recipeId,
+          category_id: categoryId,
+        }))
+        const { error: categoryError } = await supabase
+          .from('recipe_categories')
+          .insert(recipeCategoriesToInsert)
+
+        if (categoryError) throw categoryError
       }
 
       // Redirect to recipe detail page
@@ -353,6 +398,42 @@ export function EditRecipePage({ params }: { params: Promise<{ id: string }> }) 
                   </Select>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Categories */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Categories</CardTitle>
+              <CardDescription>Select relevant categories for your recipe (optional)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {categories.map(category => (
+                  <div key={category.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={category.id}
+                      checked={selectedCategories.includes(category.id)}
+                      onCheckedChange={() => toggleCategory(category.id)}
+                    />
+                    <Label htmlFor={category.id} className="cursor-pointer">{category.name}</Label>
+                  </div>
+                ))}
+              </div>
+
+              {selectedCategories.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-4 border-t">
+                  <span className="text-sm text-muted-foreground">Selected:</span>
+                  {selectedCategories.map(catId => {
+                    const category = categories.find(c => c.id === catId)
+                    return category ? (
+                      <Badge key={catId} variant="secondary">
+                        {category.name}
+                      </Badge>
+                    ) : null
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
 
