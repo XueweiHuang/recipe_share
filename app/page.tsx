@@ -85,9 +85,14 @@ export async function HomePage() {
                 </Button>
               </>
             ) : (
-              <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
-                <Link href="/signup">Start Sharing Recipes</Link>
-              </Button>
+              <>
+                <Button size="lg" asChild className="bg-orange-600 hover:bg-orange-700 text-lg px-8 py-6">
+                  <Link href="/signup">Start Sharing Recipes</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6">
+                  <Link href="/recipes">Browse Recipes</Link>
+                </Button>
+              </>
             )}
           </div>
         </div>

@@ -7,6 +7,7 @@ import { Clock, Users, ChefHat, Edit, Trash2 } from 'lucide-react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import Link from 'next/link'
 import DeleteRecipeButton from '@/components/recipes/delete-recipe-button'
+import LikeButton from '@/components/recipes/like-button'
 
 export async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -40,6 +41,23 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
 
   // Check if current user is the recipe owner
   const isOwner = user?.id === recipe.user_id
+
+  // Get like count and check if user has liked
+  const { count: likeCount } = await supabase
+    .from('likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('recipe_id', id)
+
+  let isLiked = false
+  if (user) {
+    const { data: userLike } = await supabase
+      .from('likes')
+      .select('id')
+      .eq('recipe_id', id)
+      .eq('user_id', user.id)
+      .single()
+    isLiked = !!userLike
+  }
 
   // Sort ingredients and instructions
   const sortedIngredients = recipe.ingredients.sort((a: any, b: any) => a.order - b.order)
@@ -108,6 +126,16 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
               <ChefHat className="h-5 w-5 text-orange-600" />
               <Badge variant="secondary" className="capitalize">{recipe.difficulty}</Badge>
             </div>
+          </div>
+
+          {/* Social Actions */}
+          <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t">
+            <LikeButton
+              recipeId={id}
+              initialLikeCount={likeCount || 0}
+              initialIsLiked={isLiked}
+              isLoggedIn={!!user}
+            />
           </div>
         </div>
 
