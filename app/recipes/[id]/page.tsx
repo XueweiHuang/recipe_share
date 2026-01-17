@@ -22,7 +22,14 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
       *,
       profiles:user_id (username, full_name),
       ingredients (id, name, quantity, unit, order),
-      instructions (id, step_number, description)
+      instructions (id, step_number, description),
+      recipe_categories (
+        categories (
+          id,
+          name,
+          slug
+        )
+      )
     `)
     .eq('id', id)
     .single()
@@ -37,6 +44,9 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
   // Sort ingredients and instructions
   const sortedIngredients = recipe.ingredients.sort((a: any, b: any) => a.order - b.order)
   const sortedInstructions = recipe.instructions.sort((a: any, b: any) => a.step_number - b.step_number)
+  
+  // Extract categories
+  const categories = recipe.recipe_categories?.map((rc: any) => rc.categories).filter(Boolean) || []
 
   const totalTime = (recipe.prep_time || 0) + (recipe.cook_time || 0)
 
@@ -71,6 +81,17 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{recipe.title}</h1>
           {recipe.description && (
             <p className="text-xl text-gray-600">{recipe.description}</p>
+          )}
+
+          {/* Categories */}
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {categories.map((category: any) => (
+                <Badge key={category.id} variant="outline" className="text-sm">
+                  {category.name}
+                </Badge>
+              ))}
+            </div>
           )}
 
           {/* Meta information */}

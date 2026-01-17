@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { Search, X, SlidersHorizontal } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import RecipeCard from './recipe-card'
@@ -27,7 +29,10 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   const [difficulty, setDifficulty] = useState(searchParams.get('difficulty') || 'all')
   const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'newest')
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    const categoryParam = searchParams.get('categories')
+    return categoryParam ? categoryParam.split(',') : []
+  })
   const [categories, setCategories] = useState<any[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [totalCount, setTotalCount] = useState(initialRecipes.length)
@@ -44,17 +49,25 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
     if (data) setCategories(data)
   }
 
+  function toggleCategory(categoryId: string) {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    )
+  }
+
   useEffect(() => {
     // Update URL with search params
     const params = new URLSearchParams()
     if (searchQuery) params.set('q', searchQuery)
     if (difficulty !== 'all') params.set('difficulty', difficulty)
     if (sortBy !== 'newest') params.set('sort', sortBy)
-    if (selectedCategory !== 'all') params.set('category', selectedCategory)
+    if (selectedCategories.length > 0) params.set('categories', selectedCategories.join(','))
     
     const newUrl = params.toString() ? `/recipes?${params.toString()}` : '/recipes'
     router.push(newUrl, { scroll: false })
-  }, [searchQuery, difficulty, sortBy, selectedCategory])
+  }, [searchQuery, difficulty, sortBy, selectedCategories])
 
   async function handleSearch() {
     setLoading(true)
@@ -132,9 +145,11 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
 
       // Filter by category (client-side)
       let filteredRecipes = mappedRecipes
-      if (selectedCategory !== 'all') {
+      if (selectedCategories.length > 0) {
         filteredRecipes = mappedRecipes.filter(recipe => 
-          recipe.categories.some((cat: any) => cat.id === selectedCategory)
+          selectedCategories.some(selectedCatId =>
+            recipe.categories.some((cat: any) => cat.id === selectedCatId)
+          )
         )
       }
 
@@ -149,19 +164,19 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
 
   useEffect(() => {
     handleSearch()
-  }, [difficulty, sortBy, selectedCategory])
+  }, [difficulty, sortBy, selectedCategories])
 
   function clearFilters() {
     setSearchQuery('')
     setDifficulty('all')
     setSortBy('newest')
-    setSelectedCategory('all')
+    setSelectedCategories([])
     setRecipes(initialRecipes)
     setTotalCount(initialRecipes.length)
     router.push('/recipes')
   }
 
-  const hasActiveFilters = searchQuery || difficulty !== 'all' || sortBy !== 'newest' || selectedCategory !== 'all'
+  const hasActiveFilters = searchQuery || difficulty !== 'all' || sortBy !== 'newest' || selectedCategories.length > 0
 
   return (
     <>
@@ -196,51 +211,56 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
 
             {/* Filters (collapsible) */}
             {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id}>
+              <div className="space-y-4 pt-4 border-t">
+                {/* Categories - Multi-select with checkboxes */}
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Categories (select multiple)</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {categories.map(category => (
+                      <div key={category.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`filter-${category.id}`}
+                          checked={selectedCategories.includes(category.id)}
+                          onCheckedChange={() => toggleCategory(category.id)}
+                        />
+                        <Label htmlFor={`filter-${category.id}`} className="cursor-pointer text-sm">
                           {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Difficulty</label>
-                  <Select value={difficulty} onValueChange={setDifficulty}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Levels</SelectItem>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Difficulty and Sort */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Difficulty</label>
+                    <Select value={difficulty} onValueChange={setDifficulty}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Levels</SelectItem>
+                        <SelectItem value="easy">Easy</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="hard">Hard</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Sort By</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest First</SelectItem>
-                      <SelectItem value="oldest">Oldest First</SelectItem>
-                      <SelectItem value="quickest">Quickest First</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Sort By</label>
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newest">Newest First</SelectItem>
+                        <SelectItem value="oldest">Oldest First</SelectItem>
+                        <SelectItem value="quickest">Quickest First</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             )}
@@ -258,15 +278,18 @@ export default function RecipeSearch({ initialRecipes, isLoggedIn }: RecipeSearc
                     />
                   </Badge>
                 )}
-                {selectedCategory !== 'all' && (
-                  <Badge variant="secondary" className="gap-1">
-                    {categories.find(c => c.id === selectedCategory)?.name}
-                    <X 
-                      className="h-3 w-3 cursor-pointer" 
-                      onClick={() => setSelectedCategory('all')}
-                    />
-                  </Badge>
-                )}
+                {selectedCategories.map(categoryId => {
+                  const category = categories.find(c => c.id === categoryId)
+                  return category ? (
+                    <Badge key={categoryId} variant="secondary" className="gap-1">
+                      {category.name}
+                      <X 
+                        className="h-3 w-3 cursor-pointer" 
+                        onClick={() => toggleCategory(categoryId)}
+                      />
+                    </Badge>
+                  ) : null
+                })}
                 {difficulty !== 'all' && (
                   <Badge variant="secondary" className="gap-1">
                     {difficulty}
