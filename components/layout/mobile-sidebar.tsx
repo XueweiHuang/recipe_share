@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChefHat, Home, Search, BookOpen, User, Settings, PlusCircle, Heart, LogOut, UserCircle } from 'lucide-react'
+import { ChefHat, Home, Search, BookOpen, User, Settings, PlusCircle, Heart, LogOut, UserCircle, Bookmark } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -136,7 +136,7 @@ export function MobileSidebar({ user, profile, onLogout, trigger }: MobileSideba
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
-            <Heart className="h-5 w-5" />
+            <Bookmark className="h-5 w-5" />
             Saved Recipes
           </Link>
 

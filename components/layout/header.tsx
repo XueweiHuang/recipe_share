@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ChefHat, LogOut, User as UserIcon, Settings, PlusCircle, Menu } from "lucide-react"
+import { ChefHat, LogOut, User as UserIcon, Settings, PlusCircle, Menu, Bookmark } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -140,6 +140,12 @@ export function Header() {
                     <Link href={`/profile/${profile?.username || 'user'}`}>
                       <UserIcon className="h-4 w-4 mr-2" />
                       My Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/saved">
+                      <Bookmark className="h-4 w-4 mr-2" />
+                      Saved Recipes
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">

@@ -8,6 +8,7 @@ import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import Link from 'next/link'
 import DeleteRecipeButton from '@/components/recipes/delete-recipe-button'
 import LikeButton from '@/components/recipes/like-button'
+import SaveButton from '@/components/recipes/save-button'
 
 export async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -49,6 +50,7 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
     .eq('recipe_id', id)
 
   let isLiked = false
+  let isSaved = false
   if (user) {
     const { data: userLike } = await supabase
       .from('likes')
@@ -57,6 +59,14 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
       .eq('user_id', user.id)
       .single()
     isLiked = !!userLike
+
+    const { data: userSaved } = await supabase
+      .from('saved_recipes')
+      .select('id')
+      .eq('recipe_id', id)
+      .eq('user_id', user.id)
+      .single()
+    isSaved = !!userSaved
   }
 
   // Sort ingredients and instructions
@@ -134,6 +144,11 @@ export async function RecipeDetailPage({ params }: { params: Promise<{ id: strin
               recipeId={id}
               initialLikeCount={likeCount || 0}
               initialIsLiked={isLiked}
+              isLoggedIn={!!user}
+            />
+            <SaveButton
+              recipeId={id}
+              initialIsSaved={isSaved}
               isLoggedIn={!!user}
             />
           </div>
