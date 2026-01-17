@@ -1250,7 +1250,7 @@ npx shadcn-ui@latest init
 - [x] Show recipe metadata (time, servings, difficulty)
 - [x] Show recipe author information
 
-**Step 7: Recipe Browsing** ✅ (Partial - In Progress)
+**Step 7: Recipe Browsing** ✅ (95% Complete - In Progress)
 - [x] Create dedicated /recipes page
 - [x] Recipe grid layout (responsive: 1/2/3 columns)
 - [x] Load More button pagination
@@ -1260,10 +1260,15 @@ npx shadcn-ui@latest init
 - [x] Edit recipe page with pre-filled form
 - [x] Delete recipe with confirmation dialog
 - [x] Recipe ownership validation
-- [ ] Search functionality (full-text search)
-- [ ] Filter sidebar component (difficulty, cook time, servings)
-- [ ] Category pages
-- [ ] Sort options implementation (newest, popular, trending)
+- [x] Search functionality (title and description)
+- [x] Filter by difficulty
+- [x] Sort options (newest, oldest, quickest)
+- [x] Loading skeletons for all pages
+- [x] Category selection in recipe creation form
+- [ ] Category badges on recipe cards
+- [ ] Category filter in search
+- [ ] Categories in edit form
+- [ ] Category pages (optional)
 
 ### Phase 3: User Features (Week 5)
 
